@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gitwrapped"
+version = "0.1.0"
+description = "Generate a beautiful \"Wrapped\" report from your git history — terminal and HTML."
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "GitWrapped Contributors"}
+]
+keywords = ["git", "wrapped", "year-in-review", "cli", "developer-tools"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+dependencies = [
+    "typer>=0.9.0",
+    "GitPython>=3.1.0",
+    "rich>=13.0.0",
+    "openai>=1.0.0",
+    "jinja2>=3.1.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+gitwrapped = "gitwrapped.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/gitwrapped/gitwrapped"
+Repository = "https://github.com/gitwrapped/gitwrapped"
+
+[tool.setuptools.packages.find]
+where = ["."]
