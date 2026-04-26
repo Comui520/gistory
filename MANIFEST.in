@@ -1,0 +1,2 @@
+include gitwrapped/templates/*
+recursive-include gitwrapped/templates *
