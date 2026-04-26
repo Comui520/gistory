@@ -7,7 +7,7 @@ name = "gitwrapped"
 version = "0.1.0"
 description = "Generate a beautiful \"Wrapped\" report from your git history — terminal and HTML."
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "GitWrapped Contributors"}
 ]
@@ -37,8 +37,14 @@ dependencies = [
 gitwrapped = "gitwrapped.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/gitwrapped/gitwrapped"
-Repository = "https://github.com/gitwrapped/gitwrapped"
+Homepage = "https://github.com/Comui520/gitwrapped"
+Repository = "https://github.com/Comui520/gitwrapped"
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools.package-data]
+gitwrapped = ["templates/*"]
+
+[tool.setuptools]
+include-package-data = true

@@ -27,7 +27,7 @@ def generate(
         output_path: File path to write the HTML report.
         lang: Language code ("en" or "zh").
     """
-    template_dir = Path(__file__).resolve().parent.parent / "templates"
+    template_dir = Path(__file__).resolve().parent / "templates"
     env = Environment(
         loader=FileSystemLoader(str(template_dir)),
         autoescape=True,
