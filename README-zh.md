@@ -1,4 +1,4 @@
-# ✦ GitWrapped
+# ✦ Gistory
 
 从你的 Git 历史中生成一份精美的"年度总结"报告 — 支持终端渲染和独立 HTML 文件。
 
@@ -21,15 +21,15 @@
 
 ```bash
 # 克隆后本地安装
-git clone https://github.com/gitwrapped/gitwrapped.git
-cd gitwrapped
+git clone https://github.com/Comui520/gistory.git
+cd gistory
 pip install -e .
 ```
 
 通过 PyPI 安装（即将上线）：
 
 ```bash
-pip install gitwrapped
+pip install gistory
 ```
 
 ## 配置
@@ -54,28 +54,28 @@ export OPENAI_API_KEY="sk-..."
 
 ```bash
 # 基本用法（分析当前目录，最近一年）
-gitwrapped
+gistory
 
 # 自定义时间范围
-gitwrapped --since "6 months ago"
+gistory --since "6 months ago"
 
 # 指定仓库路径
-gitwrapped --repo /path/to/repo
+gistory --repo /path/to/repo
 
 # 自定义输出路径
-gitwrapped --output my-wrapped.html
+gistory --output my-wrapped.html
 
 # 切换语言和风格
-gitwrapped --lang zh --style roast
+gistory --lang zh --style roast
 
 # 完整示例
-gitwrapped --since "1 year ago" --repo . --output wrapped.html --lang zh --style fun
+gistory --since "1 year ago" --repo . --output wrapped.html --lang zh --style fun
 ```
 
 ## 示例输出
 
 ```
-✦ Your GitWrapped Report ✦
+✦ Gistory ✦
 
 ┌─────────────────────────────────────┐
 │  📊  Basic Stats                    │
@@ -111,4 +111,4 @@ Jan  ██ ██ ░░ ██ ██ ░░ ░░
 
 ## 开源许可
 
-MIT © 2025 GitWrapped Contributors
+MIT © 2025 Gistory Contributors

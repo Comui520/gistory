@@ -1,4 +1,4 @@
-"""GitWrapped CLI entry point.
+"""Gistory CLI entry point.
 
 Generates a developer's "Wrapped" report from a local git repository,
 displays a rich terminal report, calls an LLM for fun insights,
@@ -12,7 +12,7 @@ from pathlib import Path
 import typer
 
 app = typer.Typer(
-    name="gitwrapped",
+    name="gistory",
     help="Generate a beautiful \"Wrapped\" report from your git history.",
     add_completion=False,
 )
@@ -51,7 +51,7 @@ def main(
         help="Tone of the AI report (fun, neutral, or roast).",
     ),
 ) -> None:
-    """Generate your GitWrapped report!"""
+    """Generate your Gistory report!"""
     # Validate lang and style
     if lang not in ("en", "zh"):
         typer.echo(f"❌ Invalid language '{lang}'. Use 'en' or 'zh'.", err=True)

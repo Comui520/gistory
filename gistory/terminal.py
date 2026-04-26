@@ -1,7 +1,7 @@
 """Terminal rendering module.
 
 Uses Rich to display a beautiful, colorful terminal report
-of the developer's GitWrapped statistics.
+of the developer's Gistory statistics.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ console = Console()
 
 
 def show(stats: dict[str, Any], ai_report: dict[str, Any] | None) -> None:
-    """Render the full GitWrapped terminal report.
+    """Render the full Gistory terminal report.
 
     Args:
         stats: Git statistics dictionary.
@@ -39,7 +39,7 @@ def show(stats: dict[str, Any], ai_report: dict[str, Any] | None) -> None:
 
 def _show_header() -> None:
     """Display the report title."""
-    title = Text("✦ Your GitWrapped Report ✦", style="bold cyan")
+    title = Text("✦ Gistory ✦", style="bold cyan")
     header_panel = Panel(
         Align.center(title),
         border_style="bright_cyan",

@@ -1,11 +1,11 @@
-# Contributing to GitWrapped
+# Contributing to Gistory
 
 Thanks for your interest in contributing!
 
 ## Getting Started
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/gitwrapped.git`
+2. Clone your fork: `git clone https://github.com/your-username/gistory.git`
 3. Create a branch: `git checkout -b feature/my-feature`
 4. Install in dev mode: `pip install -e ".[dev]"`
 
@@ -16,7 +16,7 @@ Thanks for your interest in contributing!
 pip install -e .
 
 # Run the CLI
-python -m gitwrapped.cli --help
+python -m gistory.cli --help
 ```
 
 ## Code Style
@@ -29,7 +29,7 @@ python -m gitwrapped.cli --help
 ## Making Changes
 
 1. Make your changes
-2. Test locally: `gitwrapped --since "1 month ago"`
+2. Test locally: `gistory --since "1 month ago"`
 3. Commit with a clear message
 4. Push your branch
 5. Open a pull request

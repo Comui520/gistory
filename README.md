@@ -1,4 +1,4 @@
-# ✦ GitWrapped
+# ✦ Gistory
 
 Generate a beautiful "Wrapped" report from your git history — rich terminal UI and standalone HTML.
 
@@ -21,15 +21,15 @@ Generate a beautiful "Wrapped" report from your git history — rich terminal UI
 
 ```bash
 # Clone and install
-git clone https://github.com/gitwrapped/gitwrapped.git
-cd gitwrapped
+git clone https://github.com/Comui520/gistory.git
+cd gistory
 pip install -e .
 ```
 
 Or from PyPI (coming soon):
 
 ```bash
-pip install gitwrapped
+pip install gistory
 ```
 
 ## Configuration
@@ -54,28 +54,28 @@ export OPENAI_API_KEY="sk-..."
 
 ```bash
 # Basic usage (uses current directory, last 1 year)
-gitwrapped
+gistory
 
 # Custom date range
-gitwrapped --since "6 months ago"
+gistory --since "6 months ago"
 
 # Specify a repo
-gitwrapped --repo /path/to/repo
+gistory --repo /path/to/repo
 
 # Output to custom path
-gitwrapped --output my-wrapped.html
+gistory --output my-wrapped.html
 
 # Change language and style
-gitwrapped --lang zh --style roast
+gistory --lang zh --style roast
 
 # Full example
-gitwrapped --since "1 year ago" --repo . --output wrapped.html --lang en --style fun
+gistory --since "1 year ago" --repo . --output wrapped.html --lang en --style fun
 ```
 
 ## Example Output
 
 ```
-✦ Your GitWrapped Report ✦
+✦ Gistory ✦
 
 ┌─────────────────────────────────────┐
 │  📊  Basic Stats                    │
@@ -111,4 +111,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT © 2025 GitWrapped Contributors
+MIT © 2025 Gistory Contributors
