@@ -1,2 +1,2 @@
-include gitwrapped/templates/*
-recursive-include gitwrapped/templates *
+include gistory/templates/*
+recursive-include gistory/templates *

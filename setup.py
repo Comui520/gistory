@@ -1,4 +1,4 @@
-"""Setup script for GitWrapped.
+"""Setup script for Gistory.
 
 Build the package with:
     python setup.py sdist bdist_wheel
