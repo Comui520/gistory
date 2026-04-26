@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if lang == 'zh' %}Gistory 年度代码报告{% else %}Gistory Report{% endif %}</title>
+<meta name="description" content="{% if lang == 'zh' %}{{ total_commits }} 次提交。{{ ai_report.persona_tags[0] if ai_report and ai_report.persona_tags else '开发者' }}。属于你的代码之年。{% else %}{{ total_commits }} commits. {{ ai_report.persona_tags[0] if ai_report and ai_report.persona_tags else 'Developer' }}. Your year in code, wrapped.{% endif %}">
+
+<meta property="og:title" content="{% if lang == 'zh' %}我的 Gistory 年度报告{% else %}My Gistory Report{% endif %}">
+<meta property="og:description" content="{% if lang == 'zh' %}{{ total_commits }} 次提交。{{ ai_report.persona_tags[0] if ai_report and ai_report.persona_tags else '开发者' }}。属于你的代码之年。{% else %}{{ total_commits }} commits. {{ ai_report.persona_tags[0] if ai_report and ai_report.persona_tags else 'Developer' }}. My year in code, wrapped.{% endif %}">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% if lang == 'zh' %}Gistory 年度代码报告{% else %}Gistory Report{% endif %}">
+
+<style>
+/* ── Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Theme ── */
+:root {
+  --bg: #0e0e0c;
+  --bg-card: #141412;
+  --text: #e8e4dc;
+  --text-dim: #8b8680;
+  --accent: #e63946;
+  --accent-glow: #ff4d4d;
+  --rule: #2a2824;
+  --tag-bg: #1c1c18;
+  --code-bg: #0a0a08;
+  --heat-0: #1c1c18;
+  --heat-1: #3d2c28;
+  --heat-2: #6b3a34;
+  --heat-3: #a3453f;
+  --heat-4: #e63946;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f6f3ee;
+    --bg-card: #ede9e2;
+    --text: #1a1814;
+    --text-dim: #8b8680;
+    --accent: #c1121f;
+    --accent-glow: #e63945;
+    --rule: #d4cfc6;
+    --tag-bg: #e8e3da;
+    --code-bg: #e8e3da;
+    --heat-0: #e8e3da;
+    --heat-1: #f4d0cc;
+    --heat-2: #e8a09a;
+    --heat-3: #d46b65;
+    --heat-4: #c1121f;
+  }
+}
+
+/* ── Body ── */
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Grain texture ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 28px 80px;
+}
+
+/* ── Header ── */
+.header {
+  margin-bottom: 64px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--rule);
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.title {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+}
+.title em {
+  font-style: italic;
+  color: var(--accent);
+}
+.lang-switch {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--rule);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.lang-switch:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.date-line {
+  margin-top: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Section ── */
+.section {
+  margin-bottom: 56px;
+}
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ── Big Numbers Row ── */
+.big-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-bottom: 2px;
+}
+@media (max-width: 500px) {
+  .big-numbers { grid-template-columns: repeat(2, 1fr); }
+}
+.num-block {
+  background: var(--bg-card);
+  padding: 32px 20px 28px;
+}
+.num-value {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.num-value .unit {
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+.num-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+/* ── Secondary Stats Grid ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+@media (max-width: 500px) {
+  .stats-row { grid-template-columns: 1fr; }
+}
+.stat-sm {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 16px 20px;
+  gap: 12px;
+}
+.stat-sm-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.stat-sm-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  text-align: right;
+}
+.stat-sm-value.plus { color: #4ade80; }
+.stat-sm-value.minus { color: var(--accent); }
+
+/* ── Heatmap ── */
+.heatmap-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+.heatmap-grid {
+  border-spacing: 3px;
+}
+.heatmap-header th {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 2px 3px 8px;
+  letter-spacing: 0.1em;
+}
+.heatmap-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-align: right;
+  padding-right: 10px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.heat-block {
+  width: 14px;
+  height: 14px;
+}
+.heat-l0 { background: var(--heat-0); }
+.heat-l1 { background: var(--heat-1); }
+.heat-l2 { background: var(--heat-2); }
+.heat-l3 { background: var(--heat-3); }
+.heat-l4 { background: var(--heat-4); }
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* ── Persona Tags ── */
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  display: inline-block;
+  padding: 8px 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  background: transparent;
+}
+
+/* ── Highlight & Comment ── */
+.highlight-block {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--text);
+  padding: 24px 0 0;
+  font-style: italic;
+}
+.highlight-block::before {
+  content: '{% if lang == 'zh' %}『{% else %}"{% endif %}';
+  font-size: 2rem;
+  color: var(--accent);
+  font-family: 'Newsreader', serif;
+  font-style: normal;
+  line-height: 0;
+  vertical-align: -0.2em;
+}
+
+.comment-block {
+  font-family: 'Newsreader', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--text);
+  padding: 20px 0 0;
+  letter-spacing: -0.01em;
+}
+
+.no-insight {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  padding: 12px 0;
+  font-style: italic;
+}
+
+/* ── Files ── */
+.file-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  gap: 16px;
+}
+.file-row + .file-row {
+  border-top: 1px solid var(--rule);
+}
+.file-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+  flex: 0 0 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--code-bg);
+}
+.file-bar-fill {
+  height: 100%;
+  background: var(--accent);
+}
+.file-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── Words ── */
+.words-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.word-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text);
+  background: var(--code-bg);
+}
+.word-badge .wc {
+  color: var(--text-dim);
+  font-size: 0.65rem;
+}
+
+/* ── Date Range ── */
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+}
+.date-range .sep {
+  color: var(--accent);
+}
+.date-val {
+  color: var(--text);
+}
+
+/* ── Share ── */
+.share-section {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+}
+.share-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.share-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .container { padding: 32px 16px 60px; }
+  .header { margin-bottom: 40px; padding-bottom: 24px; }
+  .section { margin-bottom: 40px; }
+  .file-name { flex: 0 0 120px; }
+  .num-block { padding: 24px 16px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-row">
+      <h1 class="title">
+        {% if lang == 'zh' %}
+        Git<em>Wrapped</em><br>年度代码报告
+        {% else %}
+        Git<em>Wrapped</em><br>Year in Review
+        {% endif %}
+      </h1>
+      <a class="lang-switch" href="{{ other_lang_url }}">
+        {% if lang == 'zh' %}EN{% else %}中文{% endif %}
+      </a>
+    </div>
+    <div class="date-line">{{ generated_at }}</div>
+  </header>
+
+  <!-- ── Big Numbers ── -->
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}核心数据{% else %}KEY METRICS{% endif %}
+    </div>
+    <div class="big-numbers">
+      <div class="num-block">
+        <div class="num-value">{{ total_commits }}<span class="unit"> {% if lang == 'zh' %}次{% else %}c{% endif %}</span></div>
+        <div class="num-label">{% if lang == 'zh' %}总提交次数{% else %}Total Commits{% endif %}</div>
+      </div>
+      <div class="num-block">
+        <div class="num-value">{{ active_days }}<span class="unit"> {% if lang == 'zh' %}天{% else %}d{% endif %}</span></div>
+        <div class="num-label">{% if lang == 'zh' %}活跃天数{% else %}Active Days{% endif %}</div>
+      </div>
+      <div class="num-block">
+        <div class="num-value">{{ insertions + deletions }}<span class="unit"> {% if lang == 'zh' %}行{% else %}ln{% endif %}</span></div>
+        <div class="num-label">{% if lang == 'zh' %}代码变更{% else %}Lines Changed{% endif %}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Detail Stats ── -->
+  <section class="section">
+    <div class="stats-row">
+      <div class="stat-sm">
+        <span class="stat-sm-label">{% if lang == 'zh' %}新增行数{% else %}Lines Added{% endif %}</span>
+        <span class="stat-sm-value plus">+{{ insertions }}</span>
+      </div>
+      <div class="stat-sm">
+        <span class="stat-sm-label">{% if lang == 'zh' %}删除行数{% else %}Lines Deleted{% endif %}</span>
+        <span class="stat-sm-value minus">−{{ deletions }}</span>
+      </div>
+      <div class="stat-sm">
+        <span class="stat-sm-label">{% if lang == 'zh' %}净增长{% else %}Net Change{% endif %}</span>
+        <span class="stat-sm-value">{% if insertions - deletions >= 0 %}+{% endif %}{{ insertions - deletions }}</span>
+      </div>
+      <div class="stat-sm">
+        <span class="stat-sm-label">{% if lang == 'zh' %}最爱工作日{% else %}Top Day{% endif %}</span>
+        <span class="stat-sm-value">{% if lang == 'zh' %}{{ peak_day_zh }}{% else %}{{ peak_day_en }}{% endif %}</span>
+      </div>
+      <div class="stat-sm">
+        <span class="stat-sm-label">{% if lang == 'zh' %}高峰时段{% else %}Peak Hour{% endif %}</span>
+        <span class="stat-sm-value">{{ peak_hour }}:00</span>
+      </div>
+      <div class="stat-sm">
+        <span class="stat-sm-label">{% if lang == 'zh' %}起止范围{% else %}Date Range{% endif %}</span>
+        <span class="stat-sm-value">{{ first_date | truncate(12, true, '') }} – {{ last_date | truncate(12, true, '') }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Heatmap ── -->
+  {% if heatmap_weeks %}
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}提交热力图{% else %}COMMIT HEATMAP{% endif %}
+    </div>
+    <div class="heatmap-wrap">
+      <table class="heatmap-grid">
+        <tr class="heatmap-header">
+          <th></th>
+          <th>{% if lang == 'zh' %}一{% else %}M{% endif %}</th>
+          <th>{% if lang == 'zh' %}二{% else %}T{% endif %}</th>
+          <th>{% if lang == 'zh' %}三{% else %}W{% endif %}</th>
+          <th>{% if lang == 'zh' %}四{% else %}T{% endif %}</th>
+          <th>{% if lang == 'zh' %}五{% else %}F{% endif %}</th>
+          <th>{% if lang == 'zh' %}六{% else %}S{% endif %}</th>
+          <th>{% if lang == 'zh' %}日{% else %}S{% endif %}</th>
+        </tr>
+        {% for week in heatmap_weeks %}
+        <tr>
+          <td class="heatmap-label">{{ week[0].date[:7] }}</td>
+          {% for day in week %}
+          <td class="heat-block heat-l{{ day.level }}" title="{{ day.date }}: {{ day.count }} {% if lang == 'zh' %}次提交{% else %}commits{% endif %}"></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="legend-row">
+      <span style="margin-right:6px;">{% if lang == 'zh' %}少{% else %}Less{% endif %}</span>
+      <span class="legend-dot heat-l0"></span>
+      <span class="legend-dot heat-l1"></span>
+      <span class="legend-dot heat-l2"></span>
+      <span class="legend-dot heat-l3"></span>
+      <span class="legend-dot heat-l4"></span>
+      <span style="margin-left:6px;">{% if lang == 'zh' %}多{% else %}More{% endif %}</span>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ── AI Insights ── -->
+  {% if ai_report %}
+  <!-- Persona Tags -->
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}开发者标签{% else %}PERSONA TAGS{% endif %}
+    </div>
+    <div class="tags-row">
+      {% for tag in ai_report.persona_tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Highlight -->
+  {% if ai_report.highlight %}
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}年度高光{% else %}HIGHLIGHT{% endif %}
+    </div>
+    <div class="highlight-block">{{ ai_report.highlight }}</div>
+  </section>
+  {% endif %}
+
+  <!-- Comment -->
+  {% if ai_report.comment %}
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}结语{% else %}FINAL WORD{% endif %}
+    </div>
+    <div class="comment-block">{{ ai_report.comment }}</div>
+  </section>
+  {% endif %}
+
+  {% else %}
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}AI 洞察{% else %}AI INSIGHTS{% endif %}
+    </div>
+    <div class="no-insight">
+      {% if lang == 'zh' %}无法生成 AI 洞察。请设置 OPENAI_API_KEY 以获取个性化分析。{% else %}Could not generate AI insights. Set OPENAI_API_KEY for personalized insights.{% endif %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ── Top Files ── -->
+  {% if top_files %}
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}改动最多的文件{% else %}MOST-CHANGED FILES{% endif %}
+    </div>
+    {% for file in top_files %}
+    <div class="file-row">
+      <span class="file-name" title="{{ file.file }}">{{ file.file }}</span>
+      <div class="file-bar-track">
+        <div class="file-bar-fill" style="width: {{ (file.changes / max_changes * 100)|int }}%"></div>
+      </div>
+      <span class="file-count">{{ file.changes }}</span>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ── Commit Words ── -->
+  {% if top_words %}
+  <section class="section">
+    <div class="section-label">
+      {% if lang == 'zh' %}常用提交词{% else %}COMMON COMMIT WORDS{% endif %}
+    </div>
+    <div class="words-row">
+      {% for word, count in top_words %}
+      <span class="word-badge">{{ word }} <span class="wc">{{ count }}</span></span>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ── Share ── -->
+  <div class="share-section">
+    <button class="share-btn" onclick="shareReport()">
+      {% if lang == 'zh' %}📤 分享此报告{% else %}📤 SHARE REPORT{% endif %}
+    </button>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="footer">
+    {% if lang == 'zh' %}由 Gistory 生成 · 你的代码之年，精美打包。{% else %}Generated by Gistory · Your year in code, beautifully wrapped.{% endif %}
+  </div>
+</div>
+
+<script>
+function shareReport() {
+  var url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: '{% if lang == 'zh' %}我的 Gistory 年度报告{% else %}My Gistory Report{% endif %}',
+      text: '{% if lang == 'zh' %}来看看我的 Gistory 年度报告！{{ total_commits }} 次提交。{% else %}Check out my Gistory report! {{ total_commits }} commits this year.{% endif %}',
+      url: url
+    }).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(url).then(function(){
+      alert('{% if lang == 'zh' %}链接已复制到剪贴板！{% else %}Link copied to clipboard!{% endif %}');
+    }).catch(function(){
+      prompt('{% if lang == 'zh' %}复制此链接分享：{% else %}Copy this link to share:{% endif %}', url);
+    });
+  }
+}
+</script>
+</body>
+</html>
