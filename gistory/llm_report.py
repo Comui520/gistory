@@ -8,15 +8,35 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv(usecwd=True))
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-MODEL = os.getenv("MODEL", "gpt-4o-mini")
+
+def _env(key: str, default: str) -> str:
+    """Get env var, reloading .env if not found (supports multi-directory use)."""
+    val = os.getenv(key)
+    if val:
+        return val
+    # Try harder: search from cwd upward
+    dotenv_path = find_dotenv(usecwd=True)
+    if dotenv_path:
+        load_dotenv(dotenv_path)
+        val = os.getenv(key)
+        if val:
+            return val
+    # Try from the repo root where the user's .env likely lives
+    for parent in Path.cwd().parents:
+        candidate = parent / ".env"
+        if candidate.exists():
+            load_dotenv(candidate)
+            val = os.getenv(key)
+            if val:
+                return val
+    return default
 
 FALLBACK_REPORT: dict[str, Any] = {
     "persona_tags": ["Code Explorer", "Diligent Dev", "Git Guardian"],
@@ -42,8 +62,12 @@ def generate(stats: dict[str, Any], lang: str, style: str) -> dict[str, Any]:
     Returns:
         Dictionary with persona_tags, highlight, and comment.
     """
-    if not OPENAI_API_KEY:
+    api_key = _env("OPENAI_API_KEY", "")
+    if not api_key:
         return _get_fallback(lang)
+
+    base_url = _env("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    model = _env("MODEL", "gpt-4o-mini")
 
     system_prompt, user_prompt = _build_prompts(stats, lang, style)
 
@@ -51,12 +75,12 @@ def generate(stats: dict[str, Any], lang: str, style: str) -> dict[str, Any]:
         from openai import OpenAI
 
         client = OpenAI(
-            api_key=OPENAI_API_KEY,
-            base_url=OPENAI_BASE_URL,
+            api_key=api_key,
+            base_url=base_url,
         )
 
         response = client.chat.completions.create(
-            model=MODEL,
+            model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
